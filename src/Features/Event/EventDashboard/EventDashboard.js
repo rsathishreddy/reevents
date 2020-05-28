@@ -3,6 +3,7 @@ import {Grid, Button}  from 'semantic-ui-react';
 
 import EventList from '../EventList/EventList';
 import EventForm from '../EventForm/EventForm';
+import Cuid from  'cuid';
 
 const eventsDummy = [
     {
@@ -57,15 +58,37 @@ const eventsDummy = [
 
 class EventDashboard extends Component{
 
+  state={
+    events:eventsDummy,
+    isOpen:false
+  }
+
+
+  hanndleOpenToggle=()=>{
+    this.setState((prevState)=>({
+      isOpen:!prevState.isOpen
+    }))
+  }
+
+  handleCreateEvent=(newEvents)=>{
+    newEvents.id=Cuid();
+    newEvents.hostPhotoURL='/assets/user.png';
+    this.setState((prevState)=>({
+      events:[...prevState.events,newEvents],
+      isOpen:false
+    }))
+  }
+
     render(){
+      const {events,isOpen} = this.state;
         return(
             <Grid>
                 <Grid.Column width={10}>
-                    <EventList  events={eventsDummy}/>
+                    <EventList  events={events}/>
                 </Grid.Column>
                 <Grid.Column width={6}>
-                    <Button positive content='Create Event'/>
-                   <EventForm/>
+                    <Button positive content='Create Event' onClick={this.hanndleOpenToggle}/>
+                    {isOpen && <EventForm createEvent={this.handleCreateEvent} cancelButton={this.hanndleOpenToggle}/>}
                 </Grid.Column>
             </Grid>
         )
